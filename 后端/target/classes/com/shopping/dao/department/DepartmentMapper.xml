@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shopping.dao.department.DepartmentMapper">
+
+    <!--获得部门数量-->
+    <select id="getCount" resultType="int">
+        select count(*) from department
+    </select>
+
+
+    <!--查询全部部门信息-->
+    <select id="getDeptList" resultType="Department">
+        select * from department
+        order by did
+        limit #{from},#{pageSize}
+    </select>
+
+    <!--通过部门id查询部门名称-->
+    <select id="getDeptNameByDid" resultType="String">
+        select deptName from department
+        <where>
+            <if test="did!=null and did!=''">
+                did = #{did}
+            </if>
+        </where>
+    </select>
+
+    <!--获得最后的部门id-->
+    <select id="getLastDid" resultType="Integer">
+        select did from department order by did desc limit 1
+    </select>
+
+    <!--部门名称是否重复-->
+   <select id="isDeptNameExist" resultType="int">
+        select count(1) from department
+        <where>
+            <if test="deptName!=null and deptName!=''">
+                deptName = #{deptName}
+            </if>
+        </where>
+   </select>
+
+    <!--部门职能是否重复-->
+    <select id="isDeptFunExist" resultType="int">
+        select count(1) from department
+        <where>
+            <if test="deptFun!=null and deptFun!=''">
+                deptFun = #{deptFun}
+            </if>
+        </where>
+    </select>
+
+    <!--添加新部门-->
+    <insert id="addDept">
+        insert into department (deptCode,deptName,deptFun,deptTo,deptStatus)
+        values (#{deptCode},#{deptName},#{deptFun},#{deptTo},#{deptStatus})
+    </insert>
+
+    <!--修改类别状态-->
+    <update id="modStatus">
+        update department set deptStatus=ABS(deptStatus-1)
+
+        <where>
+            <if test="did!=null and did!=''">
+                did = #{did}
+            </if>
+        </where>
+
+    </update>
+
+    <!--通过部门名称获得部门id-->
+    <select id="getDidByDeptName" resultType="Integer">
+        select did from department
+        <where>
+            <if test="deptName!=null and deptName!=''">
+                deptName = #{deptName}
+            </if>
+        </where>
+    </select>
+
+    <!--通过部门id获得部门信息-->
+    <select id="getDeptByDid" resultType="Department">
+        select * from department
+        <where>
+            <if test="did!=null and did!=''">
+                did = #{did}
+            </if>
+        </where>
+    </select>
+
+    <!--修改部门信息-->
+    <update id="modDept">
+        update department
+        <set>
+            <if test="deptName!=null and deptName!=''">
+                deptName = #{deptName}
+            </if>
+            <if test="deptFun!=null and deptFun!=''">
+                ,deptFun = #{deptFun}
+            </if>
+        </set>
+
+        <where>
+            <if test="did!=null and did!=''">
+                did = #{did}
+            </if>
+        </where>
+    </update>
+
+
+</mapper>

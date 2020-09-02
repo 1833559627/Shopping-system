@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shopping.dao.productType.ProductTypeMapper">
+
+    <!--获取类型总数-->
+    <select id="getTypeCount" resultType="int">
+        select count(*) from productType
+    </select>
+
+    <!--获取商品类别列表-->
+    <select id="getProductTypeList" resultType="ProductType">
+        select * from productType
+        order by tid
+        limit #{from},#{pageSize}
+    </select>
+
+    <!--添加商品类别-->
+    <insert id="addProductType">
+        insert into productType (typeName,typeStatus)
+        values(#{typeName},1)
+    </insert>
+
+    <!--判断类别名是否重复-->
+    <select id="isProductTypeExist" parameterType="String" resultType="int">
+        select count(1) from productType
+        <where>
+            <if test="typeName!=null and typeName!=''">
+                typeName = #{typeName}
+            </if>
+        </where>
+    </select>
+
+    <!--修改类别状态-->
+    <update id="modTypeStatus">
+        update productType set typeStatus=ABS(typeStatus-1)
+
+        <where>
+            <if test="tid!=null and tid!=''">
+                tid = #{tid}
+            </if>
+        </where>
+
+    </update>
+
+    <!--判断是否名称改变-->
+    <select id="typeName" resultType="String">
+        select typeName from productType
+        <where>
+            <if test="tid!=null and tid!=''">
+                tid = #{tid}
+            </if>
+        </where>
+    </select>
+
+    <!--修改类别名称-->
+    <update id="modTypeName">
+        update productType
+
+        <set>
+            <if test="typeName!=null and typeName!=''">
+                typeName = #{typeName}
+            </if>
+        </set>
+
+        <where>
+            <if test="tid!=null and tid!=''">
+                tid = #{tid}
+            </if>
+        </where>
+
+    </update>
+</mapper>

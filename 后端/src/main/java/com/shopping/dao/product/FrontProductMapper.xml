@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shopping.dao.product.FrontProductMapper">
+
+    <!--获取商品总数-->
+   <select id="getCount" resultType="int">
+       select count(*) from product
+       <where>
+           productStatus = 1
+           and productPrice between #{low} and #{high}
+           <if test="productName!=null and productName!=''">
+               and productName like CONCAT('%',#{productName},'%')
+           </if>
+
+           <if test="productType!=null and productType!=''">
+               and productType=#{productType}
+           </if>
+
+           and productType in (select tid from productType where typeStatus=1)
+
+       </where>
+   </select>
+
+    <!--获取类别列表-->
+    <select id="getProductType" resultType="ProductType">
+       select * from productType where typeStatus = 1;
+   </select>
+
+    <!--获取全部有效商品-->
+    <select id="getAllProducts" resultMap="rm_ProductType">
+        select u.*,r.typeName
+        from product u,productType r
+        where u.productType = r.tid
+        and u.productStatus = 1 and r.typeStatus = 1
+        order by u.productPrice
+
+    </select>
+
+
+    <!--商品展示-->
+    <select id="getProductList" resultMap="rm_ProductType">
+        select u.*,r.typeName
+        from product u,productType r
+        where u.productType = r.tid
+        and u.productPrice between #{low} and #{high}
+        and u.productStatus = 1 and r.typeStatus = 1
+        <if test="productName!=null and productName!=''">
+            and u.productName like CONCAT('%',#{productName},'%')
+        </if>
+        <if test="productType!=null and productType!=''">
+            and u.productType=#{productType}
+        </if>
+        order by u.productPrice
+        limit #{from},#{pageSize}
+
+    </select>
+
+    <resultMap id="rm_ProductType" type="Product">
+        <result property="productTypeName" column="typeName"/>
+    </resultMap>
+
+    <!--通过商品id获得商品信息-->
+    <select id="getProductByPid" resultType="Product">
+        select * from product
+        <where>
+            <if test="pid!=null and pid!=''">
+                pid=#{pid}
+            </if>
+        </where>
+    </select>
+
+    <!--商品是否已在购物车里-->
+    <select id="isProductExist" resultType="int">
+        select count(1) from cart
+        <where>
+            <if test="uid!=null and uid!=''">
+                uid=#{uid}
+            </if>
+            <if test="pid!=null and pid!=''">
+                and pid=#{pid}
+            </if>
+            and productStatus=0
+        </where>
+    </select>
+
+    <!--添加到购物车-->
+    <insert id="addToCart" parameterType="Cart">
+        insert into cart(uid,pid,productNumber,productStatus)
+         values(#{uid},#{pid},#{productNumber},#{productStatus})
+    </insert>
+
+
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shopping.dao.product.BackProductMapper">
+
+    <!--获取商品总数-->
+    <select id="getCount" resultType="int">
+        select count(*) from product where productType in (select tid from productType where typeStatus = 1)
+    </select>
+
+    <!--获取商品列表-->
+    <select id="getProductList" resultMap="rm_ProductType">
+
+        select u.*,r.typeName
+        from product u,productType r
+        where u.productType = r.tid and r.typeStatus=1
+        order by u.pid
+        limit #{from},#{pageSize}
+
+    </select>
+
+    <resultMap id="rm_ProductType" type="Product">
+        <result property="productTypeName" column="typeName"/>
+    </resultMap>
+
+    <!--修改商品状态-->
+    <update id="modStatus">
+        update product set productStatus=ABS(productStatus-1)
+
+        <where>
+            <if test="pid!=null and pid!=''">
+                pid = #{pid}
+            </if>
+        </where>
+
+    </update>
+
+    <!--判断商品名是否重复-->
+    <select id="isProductNameExist" resultType="int">
+        select count(1) from product
+        <where>
+            <if test="productName!=null and productName!=''">
+                productName = #{productName}
+            </if>
+        </where>
+    </select>
+
+    <!--判断商品名是否是不变-->
+    <select id="ProductName" resultType="String">
+        select productName from product
+        <where>
+            <if test="pid!=null and pid!=''">
+                pid = #{pid}
+            </if>
+        </where>
+    </select>
+
+    <!--修改商品信息-->
+    <update id="modProduct">
+        update product
+
+        <set>
+            <if test="productName!=null and productName!=''">
+                productName = #{productName}
+            </if>
+
+            <if test="productPic!=null and productPic!=''">
+                ,productPic = #{productPic}
+            </if>
+
+            <if test="productPrice!=null and productPrice!=''">
+                ,productPrice = #{productPrice}
+            </if>
+
+            <if test="productType!=null and productType!=''">
+                ,productType = #{productType}
+            </if>
+
+            <if test="productDes!=null and productDes!=''">
+                ,productDes = #{productDes}
+            </if>
+        </set>
+
+        <where>
+            <if test="pid!=null and pid!=''">
+                pid = #{pid}
+            </if>
+        </where>
+
+    </update>
+
+    <!--获取类别列表-->
+    <select id="getProductType" resultType="ProductType">
+        select * from productType where typeStatus = 1
+    </select>
+
+    <!--通过pid获得商品信息-->
+    <select id="getProductByPid" resultType="Product">
+        select * from product
+        <where>
+            <if test="pid!=null and pid!=''">
+                pid = #{pid}
+            </if>
+        </where>
+    </select>
+
+    <!--获取商品最后一个pid-->
+    <select id="getLastPid" resultType="Integer">
+        select pid from product
+        order by pid desc
+        limit 1
+    </select>
+
+    <!--添加商品-->
+    <insert id="addProduct">
+        insert into product (productName,productPic,productPrice,productType,productStatus,productDes)
+        values (#{productName},#{productPic},#{productPrice},#{productType},#{productStatus},#{productDes})
+    </insert>
+
+    <!--获得全部商品信息-->
+    <select id="getAllProducts" resultMap="rm_ProductType">
+
+        select u.*,r.typeName
+        from product u,productType r
+        where u.productType = r.tid
+
+    </select>
+
+
+</mapper>

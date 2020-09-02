@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shopping.dao.staff.BackStaffMapper">
+
+    <!--获取全部部门信息-->
+    <select id="getDeptList" resultType="Department">
+        select * from department
+    </select>
+
+    <!--获得员工总数-->
+    <select id="getCount" resultType="int">
+        select count(*) from staff
+        <where>
+
+            <if test="staffCode!=null and staffCode!=''">
+                staffCode like CONCAT('%',#{staffCode},'%')
+            </if>
+
+            <if test="staffName!=null and staffName!=''">
+                and staffName like CONCAT('%',#{staffName},'%')
+            </if>
+
+            <if test="phone!=null and phone!=''">
+                and phone like CONCAT('%',#{phone},'%')
+            </if>
+
+            <if test="address!=null and address!=''">
+                and address like CONCAT('%',#{address},'%')
+            </if>
+
+            <if test="deptNo!=null and deptNo!=''">
+                and deptNo = #{deptNo}
+            </if>
+
+            <if test="staffRole!=null and staffRole!=''">
+                and staffRole = #{staffRole}
+            </if>
+
+            <if test="staffStatus!=null and staffStatus!=''">
+                and staffStatus = #{staffStatus}
+            </if>
+
+        </where>
+
+    </select>
+
+
+    <!--查询所有员工信息-->
+    <select id="getStaffList" resultMap="rm_Staff">
+
+        select u.*,r.deptName
+        from staff u,department r
+        <where>
+            u.deptNo = r.did
+            and r.deptStatus=1
+
+            <if test="staffCode!=null and staffCode!=''">
+                and staffCode like CONCAT('%',#{staffCode},'%')
+            </if>
+
+            <if test="staffName!=null and staffName!=''">
+                and staffName like CONCAT('%',#{staffName},'%')
+            </if>
+
+            <if test="phone!=null and phone!=''">
+                and phone like CONCAT('%',#{phone},'%')
+            </if>
+
+            <if test="address!=null and address!=''">
+                and address like CONCAT('%',#{address},'%')
+            </if>
+
+            <if test="deptNo!=null and deptNo!=''">
+                and deptNo = #{deptNo}
+            </if>
+
+            <if test="staffRole!=null and staffRole!=''">
+                and staffRole = #{staffRole}
+            </if>
+
+            <if test="staffStatus!=null and staffStatus!=''">
+                and staffStatus = #{staffStatus}
+            </if>
+
+        </where>
+
+        order by u.sid
+        limit #{from},#{pageSize}
+
+    </select>
+
+    <resultMap id="rm_Staff" type="Staff">
+        <result property="deptName" column="deptName"/>
+    </resultMap>
+
+    <!--修改员工状态-->
+    <update id="modStatus">
+        update staff set staffStatus=ABS(staffStatus-3)
+
+        <where>
+            <if test="sid!=null and sid!=''">
+                sid = #{sid}
+            </if>
+        </where>
+
+    </update>
+
+    <!--通过sid获得员工信息-->
+    <select id="getStaffBySid" resultType="Staff">
+        select * from staff
+
+        <where>
+            <if test="sid!=null and sid!=''">
+                sid = #{sid}
+            </if>
+        </where>
+
+    </select>
+
+    <!--用户名是否存在-->
+    <select id="isStaffCodeExist" resultType="int">
+        select count(1) from staff
+        <where>
+            <if test="staffCode!=null and staffCode!=''">
+                staffCode = #{staffCode}
+            </if>
+        </where>
+    </select>
+
+    <!--手机号码是否存在-->
+    <select id="isPhoneExist" resultType="int">
+        select count(1) from staff
+        <where>
+            <if test="phone!=null and phone!=''">
+                phone = #{phone}
+            </if>
+        </where>
+    </select>
+
+    <!--添加员工管理员-->
+    <insert id="addStaff" parameterType="Staff">
+        insert into staff (staffName,staffCode,password,phone,address,deptNo,staffRole,staffStatus)
+        values (#{staffName},#{staffCode},#{password},#{phone},#{address},#{deptNo},#{staffRole},#{staffStatus})
+    </insert>
+
+    <!--修改员工信息-->
+    <update id="modStaff" parameterType="Staff">
+        update staff
+
+        <set>
+            <if test="staffName!=null and staffName!=''">
+                staffName = #{staffName}
+            </if>
+
+            <if test="phone!=null and phone!=''">
+                ,phone = #{phone}
+            </if>
+
+            <if test="address!=null and address!=''">
+                ,address = #{address}
+            </if>
+
+            <if test="deptNo!=null and deptNo!=''">
+                ,deptNo = #{deptNo}
+            </if>
+
+            <if test="staffRole!=null and staffRole!=''">
+                ,staffRole = #{staffRole}
+            </if>
+
+        </set>
+
+        <where>
+            <if test="sid!=null and sid!=''">
+                sid = #{sid}
+            </if>
+        </where>
+
+    </update>
+
+    <!--获得搜索的员工列表-->
+    <select id="searchStaff" parameterType="Staff" resultMap="rm_Staff">
+
+        select u.*,r.deptName
+        from staff u,department r
+        <where>
+            u.deptNo = r.did
+            and r.deptStatus=1
+
+            <if test="staffCode!=null and staffCode!=''">
+                and staffCode like CONCAT('%',#{staffCode},'%')
+            </if>
+
+            <if test="staffName!=null and staffName!=''">
+                and staffName like CONCAT('%',#{staffName},'%')
+            </if>
+
+            <if test="phone!=null and phone!=''">
+                and phone like CONCAT('%',#{phone},'%')
+            </if>
+
+            <if test="address!=null and address!=''">
+                and address like CONCAT('%',#{address},'%')
+            </if>
+
+            <if test="deptNo!=null and deptNo!=''">
+                and deptNo = #{deptNo}
+            </if>
+
+            <if test="staffRole!=null and staffRole!=''">
+                and staffRole = #{staffRole}
+            </if>
+
+            <if test="staffStatus!=null and staffStatus!=''">
+                and staffStatus = #{staffStatus}
+            </if>
+
+        </where>
+
+        order by u.sid
+
+    </select>
+
+</mapper>

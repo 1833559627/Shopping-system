@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shopping.dao.user.BackUserMapper">
+
+    <!--获得用户总数-->
+    <select id="getCount" resultType="int">
+        select count(*) from user
+        <where>
+
+            <if test="userCode!=null and userCode!=''">
+                userCode like CONCAT('%',#{userCode},'%')
+            </if>
+
+            <if test="userName!=null and userName!=''">
+                and userName like CONCAT('%',#{userName},'%')
+            </if>
+
+            <if test="phone!=null and phone!=''">
+                and phone like CONCAT('%',#{phone},'%')
+            </if>
+
+            <if test="userAddress!=null and userAddress!=''">
+                and userAddress like CONCAT('%',#{userAddress},'%')
+            </if>
+
+            <if test="userStatus!=null and userStatus!=''">
+                and userStatus = #{userStatus}
+            </if>
+
+        </where>
+
+    </select>
+
+
+    <!--查询用户全部信息-->
+    <select id="getUserList" resultType="User">
+        select * from user
+        <where>
+
+            <if test="userCode!=null and userCode!=''">
+                 userCode like CONCAT('%',#{userCode},'%')
+            </if>
+
+            <if test="userName!=null and userName!=''">
+                and userName like CONCAT('%',#{userName},'%')
+            </if>
+
+            <if test="phone!=null and phone!=''">
+                and phone like CONCAT('%',#{phone},'%')
+            </if>
+
+            <if test="userAddress!=null and userAddress!=''">
+                and userAddress like CONCAT('%',#{userAddress},'%')
+            </if>
+
+            <if test="userStatus!=null and userStatus!=''">
+                and userStatus = #{userStatus}
+            </if>
+
+        </where>
+        order by uid
+        limit #{from},#{pageSize}
+    </select>
+
+    <!--修改用户状态-->
+    <update id="modStatus">
+        update user set userStatus=ABS(userStatus-3)
+
+        <where>
+            <if test="uid!=null and uid!=''">
+                uid = #{uid}
+            </if>
+        </where>
+
+    </update>
+
+    <!--通过uid获得用户信息-->
+    <select id="getUserByUid" resultType="User">
+        select * from user
+
+        <where>
+            <if test="uid!=null and uid!=''">
+                uid = #{uid}
+            </if>
+        </where>
+
+    </select>
+
+    <!--用户名是否存在-->
+    <select id="isUserNameExist" resultType="int">
+        select count(1) from user
+        <where>
+            <if test="userName!=null and userName!=''">
+                userName = #{userName}
+            </if>
+        </where>
+    </select>
+
+    <!--手机号码是否存在-->
+    <select id="isPhoneExist" resultType="int">
+        select count(1) from user
+        <where>
+            <if test="phone!=null and phone!=''">
+                phone = #{phone}
+            </if>
+        </where>
+    </select>
+
+    <!--修改用户信息-->
+    <update id="modUser" parameterType="User">
+        update user
+
+        <set>
+
+            <if test="userName!=null and userName!=''">
+                userName = #{userName}
+            </if>
+
+            <if test="phone!=null and phone!=''">
+                ,phone = #{phone}
+            </if>
+
+            <if test="userAddress!=null and userAddress!=''">
+                ,userAddress = #{userAddress}
+            </if>
+
+        </set>
+
+        <where>
+            <if test="uid!=null and uid!=''">
+                uid = #{uid}
+            </if>
+        </where>
+
+    </update>
+
+
+
+</mapper>

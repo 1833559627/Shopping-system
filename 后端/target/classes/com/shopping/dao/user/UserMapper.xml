@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shopping.dao.user.UserMapper">
+
+    <!--前台登录-->
+    <select id="login" parameterType="User" resultType="User">
+        select * from user
+        <where>
+            <if test="userCode!=null and userCode!=''">
+                userCode=#{userCode}
+            </if>
+            <if test="password!=null and password!=''">
+                and password=#{password}
+            </if>
+        </where>
+    </select>
+
+    <!--通过用户名获取用户信息-->
+    <select id="getUserByUserCode" parameterType="String" resultType="User">
+        select * from user
+        <where>
+            <if test="userCode!=null and userCode!=''">
+                userCode=#{userCode}
+            </if>
+        </where>
+    </select>
+
+    <!--通过手机号码获取用户信息-->
+
+    <select id="getUserByPhone" parameterType="String" resultType="User">
+        select * from user
+        <where>
+            <if test="phone!=null and phone!=''">
+                phone=#{phone}
+            </if>
+        </where>
+    </select>
+
+    <!--注册用户-->
+    <insert id="register" parameterType="User">
+        insert into user(userName,userCode,password,phone,userAddress,userStatus)
+         values(#{userName},#{userCode},#{password},#{phone},#{userAddress},1)
+    </insert>
+
+    <!--通过uid获得用户信息-->
+    <select id="getUserByUid" resultType="User">
+        select * from user
+        <where>
+            <if test="uid!=null and uid!=''">
+                uid=#{uid}
+            </if>
+        </where>
+    </select>
+
+
+    <!--修改密码-->
+    <update id="modPassword" >
+        update user
+        <set>
+            <if test="password!=null and password!=''">
+                password = #{password}
+            </if>
+        </set>
+        <where>
+            <if test="uid!=null and uid!=''">
+                uid = #{uid}
+            </if>
+        </where>
+    </update>
+
+    <!--修改个人信息-->
+    <update id="modUserInfo" >
+        update user
+        <set>
+            <if test="userName!=null and userName!=''">
+                userName = #{userName}
+            </if>
+
+            <if test="phone!=null and phone!=''">
+                ,phone = #{phone}
+            </if>
+
+            <if test="userAddress!=null and userAddress!=''">
+                ,userAddress = #{userAddress}
+            </if>
+
+        </set>
+        <where>
+            <if test="uid!=null and uid!=''">
+                uid = #{uid}
+            </if>
+        </where>
+    </update>
+
+    <!--修改头像-->
+    <update id="modAvatar">
+        update user
+        <set>
+            <if test="avatar!=null and avatar!=''">
+                avatar = #{avatar}
+            </if>
+        </set>
+        <where>
+            <if test="uid!=null and uid!=''">
+                uid = #{uid}
+            </if>
+        </where>
+    </update>
+
+    <!--获取用户的生活照列表-->
+    <select id="getLifePhotoListByUid" resultType="LifePhoto">
+        select * from lifePhoto
+        <where>
+            <if test="uid!=null and uid!=''">
+                uid=#{uid}
+            </if>
+            and picStatus = 1
+        </where>
+    </select>
+
+    <!--获取用户的生活照最后一个照片-->
+    <select id="getLastLifePhoto" resultType="int">
+        select count(*) from lifePhoto
+        <where>
+            <if test="uid!=null and uid!=''">
+                uid=#{uid}
+            </if>
+        </where>
+    </select>
+
+    <!--上传生活照-->
+    <insert id="addLifePhoto">
+        insert into lifePhoto (uid,userPic,picStatus)
+        values (#{uid},#{pic},1)
+    </insert>
+
+    <!--删除生活照-->
+    <update id="deleteLifePhoto">
+        update lifePhoto set picStatus = 2
+        <where>
+            <if test="pic!=null and pic!=''">
+                userPic = #{pic}
+            </if>
+        </where>
+    </update>
+
+
+</mapper>
